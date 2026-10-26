@@ -1,3 +1,16 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/cairnml-logo-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/cairnml-logo.svg">
+    <img src="assets/cairnml-logo.svg" alt="CairnML" width="480">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="https://github.com/gianlucapargaetzi/cairnml-dataset-registry/actions/workflows/test.yml"><img src="https://github.com/gianlucapargaetzi/cairnml-dataset-registry/actions/workflows/test.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/gianlucapargaetzi/cairnml-dataset-registry/stargazers"><img src="https://img.shields.io/github/stars/gianlucapargaetzi/cairnml-dataset-registry?style=flat-square&logo=github" alt="GitHub stars"></a>
+</p>
+
 # cairnml-dataset-registry
 
 Public datasets, and the adapters that read each one into the CairnML dataset format. A training script asks for a
