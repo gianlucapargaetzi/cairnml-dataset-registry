@@ -1,0 +1,2 @@
+# Owners whose dataset repositories may be registered here (one per line). The server has the same list.
+gianlucapargaetzi

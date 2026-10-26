@@ -1,0 +1,9 @@
+# COCO Fashion (Fashionpedia): garment and accessory boxes in the COCO format, from the project's own web sources.
+# The publisher does not version the files, so a run records the revision the server reports (ETags and sizes).
+source: web
+link:
+  - https://s3.amazonaws.com/ifashionist-dataset/annotations/instances_attributes_train2020.json
+  - https://s3.amazonaws.com/ifashionist-dataset/images/train2020.zip
+  - https://s3.amazonaws.com/ifashionist-dataset/annotations/instances_attributes_val2020.json
+  - https://s3.amazonaws.com/ifashionist-dataset/images/val_test2020.zip
+adapter: coco_fashion

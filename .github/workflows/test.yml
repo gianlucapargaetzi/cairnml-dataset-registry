@@ -1,0 +1,25 @@
+name: adapters
+
+# Every change to the default branch comes through a pull request that passes this. The branch is what
+# training runs use when they ask for no particular commit, so it has to keep working.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  adapters:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # The SDK is a public repository, so no token is needed.
+      - uses: actions/checkout@v4
+        with:
+          repository: gianlucapargaetzi/cairnml
+          ref: main
+          path: sdk
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "./sdk[dataset]" pytest pyyaml
+      - run: python -m pytest -q tests
