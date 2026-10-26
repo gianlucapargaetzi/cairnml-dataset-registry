@@ -29,6 +29,8 @@ class CocoFashion(Adapter):
             boxes = defaultdict(list)
             for ann in data["annotations"]:
                 x, y, width, height = ann["bbox"]
+                if width <= 0 or height <= 0:  # the source has a few empty boxes ([0, 0, 0, 0]); they are not objects
+                    continue
                 boxes[ann["image_id"]].append({"box": [x, y, x + width, y + height], "label": names[ann["category_id"]]})
             for image in data["images"]:
                 writer.add(str(image["id"]), split, {"image": f"{folder}/{image['file_name']}"},
