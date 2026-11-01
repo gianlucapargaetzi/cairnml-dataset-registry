@@ -1,8 +1,6 @@
 # CIFAR-10: 60000 colour images of 32 by 32 pixels in 10 classes, from the University of Toronto.
-# The publisher gives an MD5 for the archive, so the file is verified when it is downloaded.
-source: web
+# The copy on the Hugging Face Hub is read at a fixed commit; the adapter reads its Parquet files.
+source: huggingface
+link: hf://datasets/uoft-cs/cifar10
+revision: 0b2714987fa478483af9968de7c934580d0bb9a2
 adapter: cifar10
-fetch:
-  - url: https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
-    checksum: md5:c58f30108f718f92721af3b95e74349a
-    unpack: tar.gz
