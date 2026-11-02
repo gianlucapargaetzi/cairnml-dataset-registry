@@ -1,0 +1,14 @@
+{
+  "labels": {
+    "class": "class"
+  },
+  "modalities": {
+    "image": "image"
+  },
+  "samples": 70000,
+  "schema_version": 1,
+  "splits": {
+    "test": 10000,
+    "train": 60000
+  }
+}
