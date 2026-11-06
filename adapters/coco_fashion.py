@@ -5,16 +5,58 @@ train2020/train/ and val_test2020/test/. Boxes arrive as COCO [x, y, width, heig
 [x1, y1, x2, y2]. Each split keeps the order of its annotation file.
 """
 
+import hashlib
 import json
+import urllib.request
+import zipfile
 from collections import defaultdict
 from pathlib import Path
 
-from cairnml.datasets import Adapter
+from cairnml.datasets import Adapter, DatasetError
+
+# The downloads are plain files and zip archives: no Python package is needed.
+REQUIREMENTS = []
 
 SPLITS = {
     "train": ("instances_attributes_train2020.json", "train2020/train"),
     "val": ("instances_attributes_val2020.json", "val_test2020/test"),
 }
+
+
+def _addresses(link) -> list:
+    return [link] if isinstance(link, str) else list(link)
+
+
+def resolve(link, revision):
+    """The revision of the files: the one given, else a hash of each address with the ETag and size the server reports."""
+    if revision:
+        return revision
+    digest = hashlib.sha256()
+    for url in _addresses(link):
+        request = urllib.request.Request(url, method="HEAD")
+        try:
+            with urllib.request.urlopen(request, timeout=60) as reply:
+                etag = reply.headers.get("ETag", "")
+                size = reply.headers.get("Content-Length", "")
+        except OSError as exc:
+            raise DatasetError(f"cannot reach {url}: {exc}") from None
+        digest.update(f"{url}\n{etag}\n{size}\n".encode())
+    return digest.hexdigest()
+
+
+def fetch(link, revision: str, dest: Path) -> None:
+    """Each address is downloaded into dest; a zip archive is unpacked into a folder named after it and removed."""
+    dest.mkdir(parents=True, exist_ok=True)
+    for url in _addresses(link):
+        target = dest / url.rsplit("/", 1)[-1].split("?", 1)[0]
+        try:
+            urllib.request.urlretrieve(url, target)
+        except OSError as exc:
+            raise DatasetError(f"cannot download {url}: {exc}") from None
+        if target.name.endswith(".zip"):
+            with zipfile.ZipFile(target) as archive:
+                archive.extractall(dest / target.name[: -len(".zip")])
+            target.unlink()
 
 
 class CocoFashion(Adapter):
