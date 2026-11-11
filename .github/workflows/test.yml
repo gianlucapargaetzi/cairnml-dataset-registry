@@ -28,7 +28,8 @@ jobs:
   # 3.12; its name is kept because it may be a required check.
   python-versions:
     name: python ${{ matrix.python }}
-    runs-on: ubuntu-latest
+    # 24.04, not latest: setup-python has no Python 3.9 build for Ubuntu 26.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
