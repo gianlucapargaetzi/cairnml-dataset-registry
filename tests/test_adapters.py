@@ -7,7 +7,8 @@ A new adapter without a sample fails here, so it cannot be merged. Run from the 
 import ast
 import gzip
 import hashlib
-import sys
+import importlib.util
+import sysconfig
 import zipfile
 from pathlib import Path
 
@@ -94,6 +95,17 @@ def test_the_requirements_of_an_adapter_are_exact_pins(adapter):
 DISTRIBUTIONS = {"pyarrow": "pyarrow", "huggingface_hub": "huggingface_hub"}
 
 
+def _is_standard_library(name):
+    """sys.stdlib_module_names exists from Python 3.10 only, and the adapters run on 3.9: ask the import system."""
+    spec = importlib.util.find_spec(name)
+    if spec is None:
+        return False
+    origin = spec.origin or ""
+    return origin in ("built-in", "frozen") or (
+        origin.startswith(sysconfig.get_paths()["stdlib"]) and "-packages" not in origin
+    )
+
+
 def test_cifar10_requires_every_package_it_imports():
     """A package the adapter imports must be named in REQUIREMENTS, so a run that lacks it is refused with the command."""
     tree = ast.parse((ROOT / "adapters" / "cifar10.py").read_text())
@@ -103,7 +115,7 @@ def test_cifar10_requires_every_package_it_imports():
             imported.update(alias.name.split(".")[0] for alias in node.names)
         elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
             imported.add(node.module.split(".")[0])
-    third_party = {name for name in imported if name not in sys.stdlib_module_names and name != "cairnml"}
+    third_party = {name for name in imported if not _is_standard_library(name) and name != "cairnml"}
     _, module = load_adapter_module(ROOT, "cifar10")
     named = {re.match(r"[\w.-]+", requirement).group(0).lower() for requirement in adapter_requirements(module, "cifar10")}
     assert third_party, "the adapter imports no package outside the standard library: the test is out of date"

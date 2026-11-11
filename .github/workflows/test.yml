@@ -23,3 +23,25 @@ jobs:
           python-version: "3.12"
       - run: pip install "./sdk[dataset]" pytest pyyaml
       - run: python -m pytest -q tests
+
+  # The adapters run inside the SDK's python, so they must work on every version the SDK supports. The job above is
+  # 3.12; its name is kept because it may be a required check.
+  python-versions:
+    name: python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: gianlucapargaetzi/cairnml
+          ref: main
+          path: sdk
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install "./sdk[dataset]" pytest pyyaml
+      - run: python -m pytest -q tests
